@@ -1,4 +1,3 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import asyncio
 import os
 import pty
@@ -10,41 +9,71 @@ import tempfile
 import json
 import shutil
 from pathlib import Path
-import fcntl
-import struct
-import termios
-import sys
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi.middleware.cors import CORSMiddleware
+from clearfx.core.config import get_data_dir
 
-ws_router = APIRouter()
+app = FastAPI()
 
-@ws_router.websocket("/ws/preview/{slug}")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/api/publish")
+async def api_publish(request: Request):
+    data = await request.json()
+    slug = data.get("slug")
+    if not slug:
+        return {"success": False, "error": "Missing slug"}
+    
+    designs_dir = get_data_dir() / "designs" / slug
+    designs_dir.mkdir(parents=True, exist_ok=True)
+    
+    src_dir = designs_dir / "src"
+    src_dir.mkdir(exist_ok=True)
+    
+    code = data.get("code", "")
+    (src_dir / "design.py").write_text(code)
+    
+    manifest = f'''format_version = 1
+id = "io.clearfx.community.{slug}"
+slug = "{slug}"
+name = "{data.get("name", slug)}"
+version = "1.0.0"
+author_name = "Studio User"
+author_handle = "{data.get("author_handle", "@user")}"
+description = "{data.get("description", "")}"
+entry_scene = "main"
+recommended_duration_ms = 3000
+'''
+    (designs_dir / "manifest.toml").write_text(manifest)
+    
+    return {"success": True}
+
+@app.websocket("/ws/preview/{slug}")
 async def websocket_preview(websocket: WebSocket, slug: str, width: int = 80, height: int = 24):
     await websocket.accept()
     
-    # Run the clearfx command in a PTY so we capture ANSI output
     pid, fd = pty.fork()
     
     if pid == 0:
-        # Child process
-        # Set terminal size
         winsize = struct.pack("HHHH", height, width, 0, 0)
         fcntl.ioctl(sys.stdout.fileno(), termios.TIOCSWINSZ, winsize)
         
-        # Add the parent src directory to PYTHONPATH
         env = os.environ.copy()
-        parent_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-        env["PYTHONPATH"] = f"{parent_src}:{env.get('PYTHONPATH', '')}"
+        env["PYTHONPATH"] = "src"
         
-        os.execvpe(sys.executable, ["python", "-m", "clearfx.cli.main", "play", slug, "--keep-screen"], env)
+        os.execvpe("python", ["python", "-m", "clearfx.cli.main", "play", slug, "--keep-screen", "--loop"], env)
     else:
-        # Parent process
         try:
-            # We want to read from fd asynchronously, but fd is blocking by default
-            # Make fd non-blocking
             flags = fcntl.fcntl(fd, fcntl.F_GETFL)
             fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
             
-            loop = asyncio.get_running_loop()
+            loop = asyncio.get_event_loop()
             
             while True:
                 try:
@@ -66,7 +95,7 @@ async def websocket_preview(websocket: WebSocket, slug: str, width: int = 80, he
                 pass
             os.close(fd)
 
-@ws_router.websocket("/ws/studio")
+@app.websocket("/ws/studio")
 async def websocket_studio(websocket: WebSocket, width: int = 80, height: int = 24):
     await websocket.accept()
     
@@ -74,7 +103,7 @@ async def websocket_studio(websocket: WebSocket, width: int = 80, height: int = 
     current_fd = None
     read_task = None
     
-    loop = asyncio.get_running_loop()
+    loop = asyncio.get_event_loop()
     
     temp_dir = tempfile.mkdtemp(prefix="clearfx_studio_")
     
@@ -104,6 +133,8 @@ async def websocket_studio(websocket: WebSocket, width: int = 80, height: int = 
                 
             if message.get("type") == "run":
                 code = message.get("code", "")
+                req_width = message.get("width", width)
+                req_height = message.get("height", height)
                 
                 # Cleanup previous run
                 if current_pid:
@@ -143,14 +174,13 @@ recommended_duration_ms = 3000
                 
                 if pid == 0:
                     # Child process
-                    winsize = struct.pack("HHHH", height, width, 0, 0)
+                    winsize = struct.pack("HHHH", req_height, req_width, 0, 0)
                     fcntl.ioctl(sys.stdout.fileno(), termios.TIOCSWINSZ, winsize)
                     
                     env = os.environ.copy()
-                    parent_src = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
-                    env["PYTHONPATH"] = f"{parent_src}:{env.get('PYTHONPATH', '')}"
+                    env["PYTHONPATH"] = "src"
                     
-                    os.execvpe(sys.executable, ["python", "-m", "clearfx.cli.main", "preview", temp_dir], env)
+                    os.execvpe("python", ["python", "-m", "clearfx.cli.main", "preview", temp_dir], env)
                 else:
                     # Parent process
                     current_pid = pid
@@ -179,3 +209,7 @@ recommended_duration_ms = 3000
             shutil.rmtree(temp_dir)
         except Exception:
             pass
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

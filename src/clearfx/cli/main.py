@@ -32,6 +32,7 @@ def main() -> None:
     play_p.add_argument("--reduced-motion", dest="reduced_motion", action="store_true")
     play_p.add_argument("--clear-after", dest="clear_after", action="store_true")
     play_p.add_argument("--keep-screen", dest="keep_screen", action="store_true", help="Do not clear screen after animation")
+    play_p.add_argument("--loop", action="store_true", help="Loop the animation indefinitely")
     play_p.add_argument("--safe", action="store_true", help="Built-in only, conservative")
     play_p.add_argument("--debug", action="store_true")
 
@@ -108,6 +109,7 @@ def main() -> None:
     # --- wrap / unwrap ---
     wrap_p = subparsers.add_parser("wrap", help="Wrap a command with ClearFX animations")
     wrap_p.add_argument("cmd", help="Command to wrap")
+    wrap_p.add_argument("--anim", help="Specific animation to play when command is run", default="")
     unwrap_p = subparsers.add_parser("unwrap", help="Unwrap a command")
     unwrap_p.add_argument("cmd", help="Command to unwrap")
 

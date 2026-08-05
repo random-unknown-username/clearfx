@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "ClearFX Contributors" },
+    { name = "Satvik Hardat", email = "satvikhardat@gmail.com" },
 ]
 keywords = ["terminal", "animation", "clear", "tui", "cli"]
 classifiers = [
@@ -62,10 +62,9 @@ client = [
 clearfx = "clearfx.cli.main:main"
 
 [project.urls]
-Homepage = "https://github.com/clearfx/clearfx"
-Documentation = "https://clearfx.io/docs"
-Repository = "https://github.com/clearfx/clearfx"
-Issues = "https://github.com/clearfx/clearfx/issues"
+Homepage = "https://github.com/random-unknown-username/clearfx"
+Repository = "https://github.com/random-unknown-username/clearfx"
+Issues = "https://github.com/random-unknown-username/clearfx/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/clearfx"]

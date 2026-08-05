@@ -45,7 +45,7 @@ class ClearFXConfig:
     blocked: list[str] = field(default_factory=list)
     tag_filters: list[str] = field(default_factory=list)
     creator_filters: list[str] = field(default_factory=list)
-    wrapped_commands: list[str] = field(default_factory=list)
+    wrapped_commands: dict[str, str] = field(default_factory=dict)
     weights: WeightConfig = field(default_factory=WeightConfig)
     marketplace_url: str = "https://marketplace.clearfx.io"
     debug: bool = False
@@ -55,6 +55,8 @@ class ClearFXConfig:
         """Create config from a dictionary."""
         if "weights" in data and isinstance(data["weights"], dict):
             data["weights"] = WeightConfig(**data["weights"])
+        if "wrapped_commands" in data and isinstance(data["wrapped_commands"], list):
+            data["wrapped_commands"] = {cmd: "" for cmd in data["wrapped_commands"]}
         valid = {k: v for k, v in data.items() if k in cls.__dataclass_fields__}
         return cls(**valid)
 

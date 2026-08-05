@@ -7,7 +7,7 @@ interface TerminalPreviewProps {
   slug: string;
 }
 
-export function TerminalPreview({ slug }: TerminalPreviewProps) {
+export default function TerminalPreview({ slug }: TerminalPreviewProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'connecting' | 'connected' | 'error' | 'disconnected'>('connecting');
   const wsRef = useRef<WebSocket | null>(null);
@@ -18,12 +18,12 @@ export function TerminalPreview({ slug }: TerminalPreviewProps) {
     // Initialize xterm.js
     const term = new Terminal({
       theme: {
-        background: '#09090b', // Zinc 950
-        foreground: '#fafafa',
-        cursor: 'transparent',
+        background: '#000000',
+        foreground: '#ffffff',
+        cursor: '#ffffff',
       },
-      fontFamily: 'JetBrains Mono, Menlo, monospace',
-      fontSize: 14,
+      fontFamily: "'JetBrains Mono', monospace",
+      fontSize: 13,
       allowProposedApi: true,
       disableStdin: true,
     });
@@ -36,7 +36,7 @@ export function TerminalPreview({ slug }: TerminalPreviewProps) {
 
     // Connect to WebSocket
     // Hardcoded to localhost:8000 for preview
-    const wsUrl = `ws://localhost:8000/ws/preview/${slug}`;
+    const wsUrl = `ws://localhost:8000/ws/preview/${slug}?width=${term.cols}&height=${term.rows}`;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 

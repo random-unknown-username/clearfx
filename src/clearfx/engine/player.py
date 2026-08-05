@@ -32,10 +32,12 @@ class AnimationPlayer:
         session: Optional[TerminalSession] = None,
         config: Any = None,
         seed: Optional[int] = None,
+        loop: bool = False,
     ) -> None:
         self.animation = animation
         self._external_session = session
         self._config = config
+        self.loop = loop
 
         # Extract settings from config (supports both dict and dataclass)
         if config is None:
@@ -158,12 +160,21 @@ class AnimationPlayer:
             framebuffer.swap()
 
             # Animation loop
-            while not timeline.is_complete:
+            while True:
                 if self._check_keypress():
                     break
 
                 dt = clock.tick()
                 timeline.tick(dt)
+
+                if timeline.is_complete:
+                    if self.loop:
+                        # Reset for next loop
+                        timeline = Timeline(duration_ms=self.duration_ms)
+                        # Re-seed or keep context flowing? Better to let context frame_number continue
+                        # but elapsed_ms resets.
+                    else:
+                        break
 
                 # Update context
                 ctx = AnimationContext(

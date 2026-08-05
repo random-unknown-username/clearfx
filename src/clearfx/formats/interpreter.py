@@ -19,14 +19,15 @@ class DesignInterpreter(Animation):
 
     def load(self, package_dir: str) -> type:
         design_path = os.path.join(package_dir, "design.json")
-        manifest_path = os.path.join(package_dir, "manifest.json")
+        manifest_path = os.path.join(package_dir, "manifest.toml")
         
         # We return a dynamic subclass of DesignInterpreter bound to this specific data
         with open(design_path, "r", encoding="utf-8") as f:
             design_data = json.load(f)
             
         with open(manifest_path, "r", encoding="utf-8") as f:
-            manifest = json.load(f)
+            import tomllib
+            manifest = tomllib.loads(f.read())
             
         class BoundInterpreter(DesignInterpreter):
             meta = AnimationMeta(

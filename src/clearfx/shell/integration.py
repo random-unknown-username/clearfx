@@ -22,34 +22,36 @@ class ShellIntegration:
             return home / ".config" / "fish" / "config.fish"
         return home / ".bashrc"
 
-    def get_managed_block(self, shell: str, wrapped_commands: list[str] = None) -> str:
-        wrapped = wrapped_commands or []
+    def get_managed_block(self, shell: str, wrapped_commands: dict[str, str] = None) -> str:
+        wrapped = wrapped_commands or {}
         blocks = []
         blocks.append(f"{self.BLOCK_START}\n# DO NOT EDIT - managed by clearfx setup-shell")
         
         if shell in ("bash", "zsh"):
             blocks.append("if command -v clearfx &>/dev/null; then")
             blocks.append("  clear() {\n    command clearfx play --clear-after\n  }")
-            for cmd in wrapped:
-                blocks.append(f"  {cmd}() {{\n    command clearfx play --keep-screen\n    command {cmd} \"$@\"\n  }}")
+            for cmd, anim in wrapped.items():
+                anim_arg = f" {anim}" if anim else ""
+                blocks.append(f"  {cmd}() {{\n    command clearfx play{anim_arg} --keep-screen\n    command {cmd} \"$@\"\n  }}")
             blocks.append("fi")
         elif shell == "fish":
             blocks.append("if type -q clearfx")
             blocks.append("  function clear\n    command clearfx play --clear-after\n  end")
-            for cmd in wrapped:
-                blocks.append(f"  function {cmd}\n    command clearfx play --keep-screen\n    command {cmd} $argv\n  end")
+            for cmd, anim in wrapped.items():
+                anim_arg = f" {anim}" if anim else ""
+                blocks.append(f"  function {cmd}\n    command clearfx play{anim_arg} --keep-screen\n    command {cmd} $argv\n  end")
             blocks.append("end")
             
         blocks.append(self.BLOCK_END)
         return "\n".join(blocks)
 
-    def setup(self, shell: Optional[str] = None, dry_run: bool = False, wrapped_commands: list[str] = None) -> None:
+    def setup(self, shell: Optional[str] = None, dry_run: bool = False, wrapped_commands: dict[str, str] = None) -> None:
         if wrapped_commands is None:
             try:
                 from clearfx.core.config import load_config
                 wrapped_commands = load_config().wrapped_commands
             except Exception:
-                wrapped_commands = []
+                wrapped_commands = {}
                 
         shell = shell or self.detect_shell()
         config_file = self.get_config_file(shell)

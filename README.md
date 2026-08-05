@@ -1,30 +1,25 @@
 <p align="center">
-  <strong>✨ ClearFX</strong><br>
-  <em>Replace terminal <code>clear</code> with stunning animations</em>
+  <strong>ClearFX</strong><br>
+  <em>Because a blank screen is boring</em>
 </p>
+
+<!-- TODO: add demo gif -->
 
 <p align="center">
   <a href="#installation">Install</a> ·
   <a href="#usage">Usage</a> ·
   <a href="#animations">Animations</a> ·
   <a href="#creating-designs">Create</a> ·
-  <a href="#marketplace">Marketplace</a> ·
   <a href="#configuration">Config</a>
 </p>
 
 ---
 
-ClearFX transforms the ordinary `clear` command into a brief, randomly selected terminal animation. Each time you clear your screen, a different piece of terminal art plays — from northern lights to firefly fields, fractal trees to tiny city shutdowns.
+I got tired of just seeing my terminal text vanish instantly when I ran `clear`, so I built ClearFX. It swaps out the standard `clear` command for a quick, random terminal animation. One second you're clearing some messy logs, and the next you're watching a tiny city shut off its lights or some ASCII birds fly away. 
 
-**36 built-in animations** · **Safe package format** · **Creator marketplace** · **Zero network during playback**
+It runs completely offline during playback, has a declarative package format so you can safely run community animations, and has a marketplace you can browse right from your terminal.
 
 ## Installation
-
-```bash
-pipx install clearfx
-```
-
-Or with pip:
 
 ```bash
 pip install clearfx
@@ -32,95 +27,68 @@ pip install clearfx
 
 ### Shell Integration
 
-After installing, set up your shell so `clear` triggers ClearFX:
+To make your regular `clear` command actually use ClearFX, run:
 
 ```bash
 clearfx setup-shell
 ```
 
-This auto-detects your shell (Bash, Zsh, or Fish) and shows exactly what will be added before making changes. A backup of your config is created automatically.
+It'll auto-detect what you're using (Bash, Zsh, or Fish) and show you exactly what it's adding before it does anything. It automatically backs up your config too, just in case.
 
-To specify a shell explicitly:
+If you need to force a specific shell:
 
 ```bash
 clearfx setup-shell --shell zsh
 ```
 
-After setup, restart your shell or source your config file. Now running `clear` plays a random animation!
+Restart your shell or source your config file, and you're good to go!
 
-### Removing Shell Integration
+If you ever want to go back to normal:
 
 ```bash
 clearfx remove-shell
 ```
 
-### Diagnostics
-
-```bash
-clearfx doctor
-```
-
 ## Usage
 
 ### Play a random animation
-
 ```bash
 clearfx play
 ```
 
-### Play a specific animation
-
+### Play a specific one
 ```bash
 clearfx play aurora-fold
 ```
 
-### List all available animations
-
+### List what's available
 ```bash
 clearfx list
 clearfx list --builtin
 clearfx list --community
-clearfx list --favorites
 ```
 
-### Get info about an animation
-
+### Tweak the playback
 ```bash
-clearfx info aurora-fold
-```
-
-### Customize playback
-
-```bash
-clearfx play --duration 700       # Duration in ms
-clearfx play --fps 24             # Frame rate
-clearfx play --seed 42            # Deterministic selection
-clearfx play --ascii              # ASCII-only mode
+clearfx play --duration 700       # Speed it up (ms)
+clearfx play --fps 24             # Change frame rate
+clearfx play --seed 42            # Get the exact same animation output
+clearfx play --ascii              # Force ASCII mode
 clearfx play --monochrome         # No colors
 clearfx play --reduced-motion     # Accessibility mode
-clearfx play --safe               # Built-in only, conservative features
-```
-
-### Favorites and blocks
-
-```bash
-clearfx favorite aurora-fold
-clearfx unfavorite aurora-fold
-clearfx block pixel-avalanche
-clearfx unblock pixel-avalanche
 ```
 
 ### Emergency disable
 
+If something goes wrong or you just need it off right now:
 ```bash
 export CLEARFX_DISABLE=1
 ```
-
-When set, ClearFX bypasses animation entirely and performs a normal clear.
+It'll completely bypass the animation and run a standard clear.
 
 ## Animations
 
-ClearFX ships with 36 handcrafted animations, each with unique motion, geometry, and timing:
+I've built 36 animations so far. Here's what's included:
 
 | # | Animation | Description |
 |---|-----------|-------------|
@@ -161,27 +129,18 @@ ClearFX ships with 36 handcrafted animations, each with unique motion, geometry,
 | 35 | Mechanical Iris | Camera aperture blades close |
 | 36 | Tiny City Shutdown | A skyline's windows turn off one by one |
 
-All animations support:
-- ✅ Deterministic seeds
-- ✅ Terminal size adaptation
-- ✅ ASCII fallback
-- ✅ Monochrome mode
-- ✅ Reduced motion mode
-
-> **Note**: Built-in animations use fictional creator handles (@mira, @echo, @flux, etc.) as project personas for marketplace attribution demonstration. These are not real individuals.
+> Note: Built-in animations use fictional creator handles to demonstrate how marketplace attribution works.
 
 ## Configuration
 
-Configuration is stored in your platform's config directory (`~/.config/clearfx/config.toml` on Linux).
+Settings live in your platform's standard config directory (like `~/.config/clearfx/config.toml` on Linux).
 
 ```bash
-clearfx config                      # Show current config
-clearfx config set duration_ms 900   # Set a value
-clearfx config set fps 24
+clearfx config                      # Check current settings
+clearfx config set duration_ms 900   # Change something
 ```
 
-### Example config
-
+Example config:
 ```toml
 enabled = true
 duration_ms = 1100
@@ -189,74 +148,35 @@ fps = 30
 reduced_motion = false
 ascii_only = false
 attribution_position = "auto"
-history_size = 8
-source = "all"
-skip_on_keypress = true
-clear_after = true
-
-[weights]
-favorites = 2.0
-newly_installed = 1.25
-builtins = 1.0
-community = 1.0
 ```
 
 ## Accessibility
 
-### Reduced Motion
+ClearFX respects `NO_COLOR` for monochrome mode out of the box.
 
-ClearFX respects accessibility needs:
-
-```bash
-clearfx play --reduced-motion
-```
-
-Or set it permanently:
-
+If you want simpler, gentler animations with fewer particles and no rapid flashing:
 ```bash
 clearfx config set reduced_motion true
 ```
 
-Reduced-motion mode doesn't disable animations — it provides calm alternatives with gentle fades, slow movement, fewer particles, and no rapid effects.
-
-### NO_COLOR
-
-ClearFX respects the `NO_COLOR` environment variable. When set, animations render in monochrome.
-
-### ASCII Mode
-
-For terminals without Unicode support:
-
+If your terminal doesn't like Unicode:
 ```bash
 clearfx config set ascii_only true
 ```
 
 ## Marketplace
 
-### Installing community designs
+You can grab designs other people have made:
 
 ```bash
 clearfx search "space"
 clearfx install aurora-fold
-clearfx install ./my-design.clearfx
-```
-
-### Updating designs
-
-```bash
-clearfx update              # Update all
-clearfx update aurora-fold   # Update specific
-```
-
-### Syncing the index
-
-```bash
-clearfx marketplace sync
+clearfx update
 ```
 
 ## Creating Designs
 
-### Quick start
+I wanted to make it easy to build your own.
 
 ```bash
 clearfx create my-animation
@@ -267,54 +187,18 @@ clearfx validate .
 clearfx pack .
 ```
 
-### Package format
+### Security Model
 
-Community packages use the `.clearfx` format — a ZIP archive containing:
+Running some random python code every time you clear your screen is a terrible idea. So, community packages use a `.clearfx` file format. It's just a ZIP archive with a declarative JSON scene definition.
 
-```
-manifest.toml    # Metadata
-design.json      # Declarative scene definition
-assets/          # Text/ASCII art assets
-previews/        # Preview images
-CHECKSUMS        # SHA-256 checksums
-SIGNATURE        # Optional Ed25519 signature
-```
+There are no `.py` files, no arbitrary code execution, no shell scripts, and zero network access when playing. It's completely sandboxed.
 
-### Security model
+## Development Setup
 
-**Community packages cannot contain executable Python code.** This is by design.
-
-Running arbitrary community Python every time you clear your terminal would create a severe supply-chain vulnerability. Instead, ClearFX uses a safe declarative format:
-
-- ✅ Validated metadata
-- ✅ Declarative scene definitions
-- ✅ Allowlisted animation opcodes
-- ✅ Bounded mathematical expressions (parsed to AST, no eval)
-- ✅ Text/ASCII assets
-- ✅ Palettes
-- ❌ No `.py` files
-- ❌ No native libraries
-- ❌ No shell scripts
-- ❌ No dynamic imports
-- ❌ No network calls
-- ❌ No filesystem access
-
-### Recording
+If you want to poke around the code:
 
 ```bash
-clearfx record aurora-fold                    # Default format
-clearfx record aurora-fold --format cast      # Asciinema
-clearfx record aurora-fold --format svg       # SVG animation
-clearfx record aurora-fold --format frames    # Text frames
-clearfx record aurora-fold --format gif       # GIF (requires Pillow)
-```
-
-## Development
-
-### Setup
-
-```bash
-git clone https://github.com/clearfx/clearfx.git
+git clone https://github.com/random-unknown-username/clearfx.git
 cd clearfx
 python -m venv .venv
 source .venv/bin/activate
@@ -322,81 +206,13 @@ pip install -e ".[dev,client,recording]"
 pre-commit install
 ```
 
-### Running tests
-
-```bash
-pytest
-pytest -m "not slow"
-pytest tests/unit/
-pytest tests/security/
-```
-
-### Linting
-
-```bash
-ruff check src/ tests/
-mypy src/clearfx/
-```
-
-### Benchmarks
-
-```bash
-clearfx benchmark
-```
-
-Reports import time, startup time, frame render time, memory usage, and more.
-
-### Marketplace server (development)
-
-```bash
-pip install -e ".[marketplace-server]"
-cd marketplace_server
-python run.py
-```
-
-### Architecture overview
-
-```
-src/clearfx/
-├── cli/          # Argparse CLI with lazy imports
-├── core/         # Config, selection, registry, attribution
-├── engine/       # Canvas, renderer, timeline, particles, easing
-├── animations/   # 36 built-in Python animations
-├── formats/      # Package format, expressions, validation
-├── compiler/     # Python → declarative compiler, creator SDK
-├── marketplace/  # Client and installer
-├── recording/    # Animation recording (SVG, cast, frames, GIF)
-├── shell/        # Shell integration (Bash, Zsh, Fish)
-└── resources/    # Static resources
-```
+To run the web marketplace locally for testing, the frontend code is included in the repo. Just start it up!
 
 ## Troubleshooting
 
-### Animation doesn't play
-
-1. Check `clearfx doctor` for diagnostics
-2. Ensure your terminal supports ANSI escape codes
-3. Try `clearfx play --safe` for conservative mode
-4. Set `CLEARFX_DISABLE=1` to bypass entirely
-
-### Terminal corruption after Ctrl+C
-
-This should never happen — ClearFX uses signal handlers and context managers to always restore terminal state. If it does:
-
-```bash
-reset  # Reset terminal
-```
-
-Please file a bug report with your terminal emulator name and version.
-
-### Shell integration issues
-
-```bash
-clearfx remove-shell  # Remove integration
-clearfx doctor        # Check for issues
-clearfx setup-shell   # Re-add integration
-```
+If things go weird:
+1. Run `clearfx doctor`
+2. If your terminal gets messed up if you hit Ctrl+C at the wrong time (it shouldn't, but just in case), type `reset` and hit enter.
 
 ## License
-
-MIT License. See [LICENSE](LICENSE) for details.
+MIT License.

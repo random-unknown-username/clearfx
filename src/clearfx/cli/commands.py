@@ -95,12 +95,14 @@ def cmd_play(args: argparse.Namespace) -> None:
 
         # Play with terminal session
         caps = detect_capabilities()
-        with TerminalSession(caps) as session:
+        keep_screen = getattr(args, "keep_screen", False)
+        with TerminalSession(caps, keep_screen=keep_screen) as session:
             player = AnimationPlayer(
                 animation=anim,
                 session=session,
                 config=config,
                 seed=getattr(args, "seed", None),
+                loop=getattr(args, "loop", False),
             )
             player.play()
 
@@ -133,6 +135,8 @@ def cmd_preview(args: argparse.Namespace) -> None:
         args.monochrome = False
     if not hasattr(args, "reduced_motion"):
         args.reduced_motion = False
+    args.keep_screen = True
+    args.loop = True
     cmd_play(args)
 
 
@@ -285,13 +289,26 @@ def cmd_update(args: argparse.Namespace) -> None:
     """Update designs from marketplace."""
     print("Checking for updates...")
     try:
-        from clearfx.marketplace.client import MarketplaceClient
-        client = MarketplaceClient()
+        from clearfx.marketplace.installer import install_package, list_installed
+        
         if args.design:
-            client.update(args.design)
-            print(f"✓ Updated '{args.design}'")
+            res = install_package(args.design)
+            if res.success:
+                print(f"✓ Updated '{args.design}' to v{res.version}")
+            else:
+                print(f"✗ Failed to update '{args.design}': {res.error}", file=sys.stderr)
         else:
-            client.update_all()
+            installed = list_installed()
+            if not installed:
+                print("No community packages installed.")
+                return
+                
+            for pkg in installed:
+                res = install_package(pkg.slug)
+                if res.success:
+                    print(f"✓ Updated '{pkg.slug}' to v{res.version}")
+                else:
+                    print(f"✗ Failed to update '{pkg.slug}': {res.error}", file=sys.stderr)
             print("✓ All designs up to date")
     except Exception as e:
         print(f"Could not check for updates: {e}", file=sys.stderr)
@@ -579,8 +596,8 @@ def cmd_wrap(args: argparse.Namespace) -> None:
     config = load_config()
     cmd = args.cmd
     
-    if cmd not in config.wrapped_commands:
-        config.wrapped_commands.append(cmd)
+    if cmd not in config.wrapped_commands or config.wrapped_commands[cmd] != args.anim:
+        config.wrapped_commands[cmd] = args.anim
         save_config(config)
         print(f"✓ Configured to wrap '{cmd}'")
         
@@ -589,7 +606,8 @@ def cmd_wrap(args: argparse.Namespace) -> None:
         integration.setup(wrapped_commands=config.wrapped_commands)
         print("Please restart your shell or re-source your config to apply changes.")
     else:
-        print(f"Command '{cmd}' is already wrapped.")
+        anim_text = f" with animation '{args.anim}'" if args.anim else ""
+        print(f"Command '{cmd}' is already wrapped{anim_text}.")
 
 
 def cmd_unwrap(args: argparse.Namespace) -> None:
@@ -601,7 +619,7 @@ def cmd_unwrap(args: argparse.Namespace) -> None:
     cmd = args.cmd
     
     if cmd in config.wrapped_commands:
-        config.wrapped_commands.remove(cmd)
+        del config.wrapped_commands[cmd]
         save_config(config)
         print(f"✓ Removed wrap for '{cmd}'")
         

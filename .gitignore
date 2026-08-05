@@ -20,6 +20,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Database and uploaded packages (for local backend)
 data/

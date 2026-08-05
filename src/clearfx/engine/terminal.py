@@ -77,8 +77,9 @@ class TerminalSession:
         capabilities: Pre-detected capabilities (auto-detected if None).
     """
 
-    def __init__(self, capabilities: Optional[TerminalCapabilities] = None) -> None:
+    def __init__(self, capabilities: Optional[TerminalCapabilities] = None, keep_screen: bool = False) -> None:
         self._capabilities = capabilities or detect_capabilities()
+        self._keep_screen = keep_screen
         self._original_settings: Any = None
         self._original_flags: Optional[int] = None
         self._old_sigint: Any = None
@@ -206,7 +207,10 @@ class TerminalSession:
                     pass
 
         # Show cursor + exit alternate screen + reset colors + enable line wrap
-        self.write(b"\033[?25h\033[?1049l\033[0m\033[?7h")
+        if self._keep_screen:
+            self.write(b"\033[?25h\033[0m\033[?7h")
+        else:
+            self.write(b"\033[?25h\033[?1049l\033[0m\033[?7h")
         self.flush()
 
         # Restore signal handlers
