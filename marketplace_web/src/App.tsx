@@ -146,9 +146,9 @@ export default function App() {
                     onChange={(e) => setSortBy(e.target.value as any)}
                     style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-normal)', padding: '4px 8px', borderRadius: '4px' }}
                   >
-                    <option value="newest">Newest First</option>
-                    <option value="name">Sort by Name</option>
-                    <option value="author">Sort by Author</option>
+                    <option value="newest" style={{ background: '#111', color: '#fff' }}>Newest First</option>
+                    <option value="name" style={{ background: '#111', color: '#fff' }}>Sort by Name</option>
+                    <option value="author" style={{ background: '#111', color: '#fff' }}>Sort by Author</option>
                   </select>
                   <span className="mono-label">{designs.length} packages available</span>
                 </div>
