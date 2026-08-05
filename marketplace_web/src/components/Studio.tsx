@@ -123,7 +123,9 @@ export default function Studio({ user, onPublish }: StudioProps) {
     const desc = prompt("Enter a short description:");
     if (!desc) return;
     
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const baseSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const handleSlug = user.handle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const slug = `${handleSlug}-${baseSlug}`;
     
     try {
       const newDesign = {

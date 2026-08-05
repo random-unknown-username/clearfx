@@ -42,13 +42,16 @@ class AnimationSelector:
         # Filter based on config (blocked, filters)
         candidates = []
         for anim in animations:
-            if anim.slug in self.config.blocked:
+            slug = anim.get("slug")
+            if slug in self.config.blocked:
                 continue
-            if self.config.tag_filters and not any(tag in self.config.tag_filters for tag in anim.tags):
+            tags = anim.get("tags", [])
+            if self.config.tag_filters and not any(tag in self.config.tag_filters for tag in tags):
                 continue
-            if self.config.creator_filters and anim.author not in self.config.creator_filters:
+            author = anim.get("author_handle") or anim.get("author_name")
+            if self.config.creator_filters and author not in self.config.creator_filters:
                 continue
-            if anim.slug in history:
+            if slug in history:
                 continue
             candidates.append(anim)
             
@@ -59,11 +62,13 @@ class AnimationSelector:
         weights = []
         for anim in candidates:
             w = 1.0
-            if anim.slug in self.config.favorites:
+            slug = anim.get("slug")
+            source = anim.get("source")
+            if slug in self.config.favorites:
                 w *= self.config.weights.favorites
-            if anim.source == "builtin":
+            if source == "builtin":
                 w *= self.config.weights.builtins
-            elif anim.source == "community":
+            elif source == "community":
                 w *= self.config.weights.community
             weights.append(w)
             
@@ -73,9 +78,10 @@ class AnimationSelector:
         selected = random.choices(candidates, weights=weights, k=1)[0]
         
         # Update history
-        history.append(selected.slug)
+        slug = selected.get("slug")
+        history.append(slug)
         if len(history) > self.config.history_size:
             history = history[-self.config.history_size:]
         self._save_history(history)
         
-        return self.registry.get_animation(selected.slug)
+        return self.registry.get_animation(slug)

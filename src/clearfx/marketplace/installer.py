@@ -21,43 +21,24 @@ class InstalledPackage:
     path: Path
 
 def install_package(slug: str) -> InstallResult:
-    """Download and install a package from the marketplace."""
-    client = MarketplaceClient()
+    """Install a package. Since marketplace is local, this just checks availability."""
+    from clearfx.core.registry import AnimationRegistry
+    registry = AnimationRegistry()
     
-    try:
-        # Download the package .clearfx file (zip) to a temp location
-        temp_zip_path = client.download(slug)
-    except Exception as e:
-        return InstallResult(False, slug, "0.0.0", str(e))
+    anim_cls = registry.get_animation(slug)
+    if not anim_cls:
+        return InstallResult(False, slug, "0.0.0", f"Package '{slug}' not found in catalog.")
         
-    try:
-        designs_dir = get_data_dir() / "designs"
-        pkg_dir = designs_dir / slug
+    meta = anim_cls.meta
+    source = "builtin"
+    # Check if community
+    if hasattr(anim_cls, "__module__") and "interpreter" in anim_cls.__module__:
+        source = "community"
         
-        # Remove old version if exists
-        if pkg_dir.exists():
-            shutil.rmtree(pkg_dir)
-            
-        pkg_dir.mkdir(parents=True, exist_ok=True)
+    if source == "builtin" or getattr(meta, "id", "").startswith("io.clearfx.builtin"):
+        return InstallResult(True, slug, meta.version, f"'{slug}' is a built-in animation and does not need installation.", None)
         
-        # Unpack the downloaded zip
-        with zipfile.ZipFile(temp_zip_path, 'r') as zf:
-            zf.extractall(pkg_dir)
-            
-        # Try to read version from manifest.toml
-        version = "1.0.0"
-        manifest_path = pkg_dir / "manifest.toml"
-        if manifest_path.exists():
-            import tomllib
-            manifest = tomllib.loads(manifest_path.read_text())
-            version = manifest.get("version", "1.0.0")
-            
-        return InstallResult(True, slug, version, None, pkg_dir)
-    except Exception as e:
-        return InstallResult(False, slug, "0.0.0", f"Extraction failed: {e}")
-    finally:
-        if temp_zip_path.exists():
-            temp_zip_path.unlink()
+    return InstallResult(True, slug, meta.version, f"'{slug}' is already installed locally.", get_data_dir() / "designs" / slug)
 
 def uninstall_package(slug: str):
     """Remove an installed package."""
