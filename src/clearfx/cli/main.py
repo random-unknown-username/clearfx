@@ -128,6 +128,9 @@ def main() -> None:
     # --- benchmark ---
     subparsers.add_parser("benchmark", help="Run performance benchmarks")
 
+    if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
+        print_banner()
+
     args = parser.parse_args()
     if args.command is None:
         parser.print_help()
@@ -199,6 +202,19 @@ def _fallback_clear() -> None:
         sys.stdout.write("\033[H\033[2J\033[3J")
         sys.stdout.flush()
 
+
+def print_banner() -> None:
+    """Print a cool fiery ASCII banner for ClearFX."""
+    banner = (
+        "\033[38;2;255;80;0m    ____ _                  _______  __\033[0m\n"
+        "\033[38;2;255;120;0m   / ___| | ___  __ _ _ __|  ___\\ \\/ /\033[0m\n"
+        "\033[38;2;255;160;0m  | |   | |/ _ \\/ _` | '__| |_   \\  / \033[0m\n"
+        "\033[38;2;255;200;0m  | |___| |  __/ (_| | |  |  _|  /  \\ \033[0m\n"
+        "\033[38;2;255;240;0m   \\____|_|\\___|\\__,_|_|  |_|   /_/\\_\\\033[0m\n"
+        "\033[90m  Terminal Animation Engine v0.2.3\033[0m\n"
+    )
+    sys.stdout.write(banner)
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
