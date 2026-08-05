@@ -128,6 +128,9 @@ def main() -> None:
     # --- benchmark ---
     subparsers.add_parser("benchmark", help="Run performance benchmarks")
 
+    # --- reset ---
+    reset_p = subparsers.add_parser("reset", help="Remove all custom animations and wrappers")
+
     if len(sys.argv) == 1 or "-h" in sys.argv or "--help" in sys.argv:
         print_banner()
 
@@ -155,7 +158,7 @@ def _dispatch(args: argparse.Namespace) -> None:
         cmd_search, cmd_validate, cmd_pack, cmd_unpack, cmd_create,
         cmd_record, cmd_config, cmd_marketplace_sync, cmd_setup_shell,
         cmd_remove_shell, cmd_doctor, cmd_benchmark, cmd_preview,
-        cmd_wrap, cmd_unwrap
+        cmd_wrap, cmd_unwrap, cmd_reset
     )
 
     handlers = {
@@ -184,6 +187,7 @@ def _dispatch(args: argparse.Namespace) -> None:
         "remove-shell": cmd_remove_shell,
         "doctor": cmd_doctor,
         "benchmark": cmd_benchmark,
+        "reset": cmd_reset,
     }
 
     handler = handlers.get(args.command)

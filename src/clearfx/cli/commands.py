@@ -630,6 +630,30 @@ def cmd_unwrap(args: argparse.Namespace) -> None:
     else:
         print(f"Command '{cmd}' is not wrapped.")
 
+def cmd_reset(args: argparse.Namespace) -> None:
+    """Remove all community animations and reset config."""
+    from clearfx.core.config import get_config_path
+    from clearfx.shell.integration import ShellIntegration
+    import shutil
+
+    # 1. Remove shell integration blocks from bashrc/zshrc/fish
+    integration = ShellIntegration()
+    integration.remove()
+
+    # 2. Delete the entire clearfx config directory
+    config_dir = get_config_path().parent
+    if config_dir.exists():
+        try:
+            shutil.rmtree(config_dir)
+            print("✓ Removed all community animations, wrappers, and config")
+        except Exception as e:
+            print(f"✗ Failed to remove config directory: {e}", file=sys.stderr)
+            sys.exit(1)
+    else:
+        print("✓ No config directory found, nothing to remove")
+    
+    print("Please restart your shell or re-source your config to apply changes.")
+
 def cmd_setup_shell(args: argparse.Namespace) -> None:
     """Set up shell integration."""
     from clearfx.shell.integration import ShellIntegration
