@@ -68,8 +68,9 @@ class ShellIntegration:
         if config_file.exists():
             content = config_file.read_text()
             if self.BLOCK_START in content:
-                print("ClearFX is already configured in this shell.")
-                return
+                # Remove the old block first so we can cleanly replace it
+                self.remove(shell)
+                content = config_file.read_text()
             # Create backup
             backup_file = config_file.with_suffix(config_file.suffix + ".clearfx.bak")
             backup_file.write_text(content)
