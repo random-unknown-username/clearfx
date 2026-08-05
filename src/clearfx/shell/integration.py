@@ -29,17 +29,17 @@ class ShellIntegration:
         
         if shell in ("bash", "zsh"):
             blocks.append("if command -v clearfx &>/dev/null; then")
-            blocks.append("  clear() {\n    command clearfx play --clear-after\n  }")
+            blocks.append("  function clear {\n    command clearfx play --clear-after\n  }")
             for cmd, anim in wrapped.items():
                 anim_arg = f" {anim}" if anim else ""
-                blocks.append(f"  {cmd}() {{\n    command clearfx play{anim_arg} --keep-screen\n    command {cmd} \"$@\"\n  }}")
+                blocks.append(f"  function {cmd} {{\n    command clearfx play{anim_arg}\n    command {cmd} \"$@\"\n  }}")
             blocks.append("fi")
         elif shell == "fish":
             blocks.append("if type -q clearfx")
             blocks.append("  function clear\n    command clearfx play --clear-after\n  end")
             for cmd, anim in wrapped.items():
                 anim_arg = f" {anim}" if anim else ""
-                blocks.append(f"  function {cmd}\n    command clearfx play{anim_arg} --keep-screen\n    command {cmd} $argv\n  end")
+                blocks.append(f"  function {cmd}\n    command clearfx play{anim_arg}\n    command {cmd} $argv\n  end")
             blocks.append("end")
             
         blocks.append(self.BLOCK_END)
