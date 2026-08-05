@@ -632,7 +632,7 @@ def cmd_unwrap(args: argparse.Namespace) -> None:
 
 def cmd_reset(args: argparse.Namespace) -> None:
     """Remove all community animations and reset config."""
-    from clearfx.core.config import get_config_path
+    from clearfx.core.config import get_config_path, get_data_dir
     from clearfx.shell.integration import ShellIntegration
     import shutil
 
@@ -645,12 +645,20 @@ def cmd_reset(args: argparse.Namespace) -> None:
     if config_dir.exists():
         try:
             shutil.rmtree(config_dir)
-            print("✓ Removed all community animations, wrappers, and config")
         except Exception as e:
             print(f"✗ Failed to remove config directory: {e}", file=sys.stderr)
+            
+    # 3. Delete the data directory (where animations are stored)
+    data_dir = get_data_dir()
+    if data_dir.exists():
+        try:
+            shutil.rmtree(data_dir)
+            print("✓ Removed all community animations, wrappers, and config")
+        except Exception as e:
+            print(f"✗ Failed to remove data directory: {e}", file=sys.stderr)
             sys.exit(1)
     else:
-        print("✓ No config directory found, nothing to remove")
+        print("✓ Removed wrappers and config (no animations found)")
     
     print("Please restart your shell or re-source your config to apply changes.")
 
