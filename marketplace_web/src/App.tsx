@@ -36,7 +36,7 @@ export default function App() {
       try {
         const q = query(collection(db, "designs"));
         const querySnapshot = await getDocs(q);
-        const fbDesigns = querySnapshot.docs.map(doc => doc.data());
+        const fbDesigns = querySnapshot.docs.map((doc: any) => doc.data());
         
         // Merge Firestore designs with builtins
         setDesigns([...fbDesigns, ...defaultCatalog]);
