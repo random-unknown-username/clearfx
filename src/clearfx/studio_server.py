@@ -12,6 +12,9 @@ from pathlib import Path
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
 from clearfx.core.config import get_data_dir
+import importlib.util
+import inspect
+from clearfx.engine.animation import Animation
 
 app = FastAPI()
 
@@ -52,7 +55,35 @@ recommended_duration_ms = 3000
 '''
     (designs_dir / "manifest.toml").write_text(manifest)
     
+    # Compile design.py to design.json
+    try:
+        spec = importlib.util.spec_from_file_location("dynamic_publish", str(src_dir / "design.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        anim_class = None
+        for name, obj in inspect.getmembers(mod, inspect.isclass):
+            if issubclass(obj, Animation) and obj is not Animation and obj.__name__ != 'CreatorAnimation':
+                anim_class = obj
+                break
+        if anim_class:
+            anim_instance = anim_class()
+            design_data = {
+                "elements": getattr(anim_instance, "elements", []),
+                "keyframes": getattr(anim_instance, "keyframes", [])
+            }
+            with open(designs_dir / "design.json", "w") as f:
+                json.dump(design_data, f)
+    except Exception as e:
+        print(f"Failed to compile design: {e}")
+        return {"success": False, "error": str(e)}
+    
     return {"success": True}
+
+@app.get("/api/catalog")
+async def api_catalog():
+    from clearfx.core.registry import AnimationRegistry
+    registry = AnimationRegistry()
+    return {"designs": registry.list_animations()}
 
 @app.websocket("/ws/preview/{slug}")
 async def websocket_preview(websocket: WebSocket, slug: str, width: int = 80, height: int = 24):

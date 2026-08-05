@@ -16,11 +16,11 @@ interface DesignInfo {
   name: string;
   description: string;
   creator: Creator;
-  upvotes_count?: number;
 }
 
 export default function App() {
   const [designs, setDesigns] = useState<any[]>(defaultCatalog);
+  const [sortBy, setSortBy] = useState<'newest' | 'name' | 'author'>('newest');
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'explore' | 'install' | 'studio' | 'profile'>('explore');
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -35,7 +35,34 @@ export default function App() {
       setUser(u);
       setUserHandle(u.handle);
     }
+
+    // Fetch catalog from backend
+    fetch('http://localhost:8000/api/catalog')
+      .then(res => res.json())
+      .then(data => {
+        if (data.designs) {
+          // Remove duplicates if backend returned some defaults
+          const merged = [...data.designs];
+          setDesigns(merged);
+        }
+      })
+      .catch(err => console.error("Failed to fetch catalog:", err));
   }, []);
+
+  const sortedDesigns = [...designs].sort((a, b) => {
+    if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
+    if (sortBy === 'author') {
+      const aAuth = a.creator?.handle || a.author_handle || '';
+      const bAuth = b.creator?.handle || b.author_handle || '';
+      return aAuth.localeCompare(bAuth);
+    }
+    if (sortBy === 'newest') {
+      if (a.source === 'community' && b.source === 'builtin') return -1;
+      if (a.source === 'builtin' && b.source === 'community') return 1;
+      return 0;
+    }
+    return 0;
+  });
 
   const handleGoogleLogin = async () => {
     const mockUser = { uid: 'mock-user-123', email: 'developer@clearfx.local', handle: 'Rand0m_unkn0wn' };
@@ -113,11 +140,22 @@ export default function App() {
             <section className="catalog-section">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
                 <h3>Community Catalog</h3>
-                <span className="mono-label">{designs.length} packages available</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <select 
+                    value={sortBy} 
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', color: 'var(--text-normal)', padding: '4px 8px', borderRadius: '4px' }}
+                  >
+                    <option value="newest">Newest First</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="author">Sort by Author</option>
+                  </select>
+                  <span className="mono-label">{designs.length} packages available</span>
+                </div>
               </div>
               
               <div className="catalog-grid">
-                {designs.map((anim) => (
+                {sortedDesigns.map((anim) => (
                   <div 
                     key={anim.slug}
                     className="catalog-card"
@@ -130,10 +168,7 @@ export default function App() {
                       <div className="catalog-card-header">
                         <div>
                           <div className="catalog-card-title">{anim.name}</div>
-                          <div className="catalog-card-author">@{anim.creator?.handle || 'unknown'}</div>
-                        </div>
-                        <div className="anim-stats">
-                          <ArrowUpCircle size={12} style={{ marginRight: '4px' }}/> {anim.upvotes_count || 0}
+                          <div className="catalog-card-author">{anim.creator?.handle || anim.author_handle || 'unknown'}</div>
                         </div>
                       </div>
                       <div className="catalog-card-desc">{anim.description || 'No description provided.'}</div>
@@ -184,7 +219,7 @@ export default function App() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Authentication</h2>
-            <p>Sign in to upvote animations and publish your own designs to the Marketplace.</p>
+            <p>Sign in to publish your own designs to the Marketplace.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <button className="btn btn-primary" onClick={handleGoogleLogin} style={{ width: '100%', height: '44px' }}>
                 Continue with Google

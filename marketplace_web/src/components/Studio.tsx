@@ -132,7 +132,8 @@ export default function Studio({ user, onPublish }: StudioProps) {
         description: desc,
         author_uid: user.uid,
         creator: { handle: user.handle },
-        upvotes_count: 0,
+        author_handle: user.handle,
+        source: 'community',
         code: code,
         timestamp: new Date().toISOString()
       };

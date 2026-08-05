@@ -20,7 +20,6 @@ interface Design {
 export default function DesignInspection({ slug, onClose, mockData }: DesignInspectionProps) {
   const [design, setDesign] = useState<Design | null>(mockData || null);
   const [loading, setLoading] = useState(!mockData);
-  const [upvoted, setUpvoted] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -33,23 +32,7 @@ export default function DesignInspection({ slug, onClose, mockData }: DesignInsp
     setTimeout(() => setError('Design not found'), 100);
   }, [slug, mockData]);
 
-  const handleUpvote = async () => {
-    const user = localStorage.getItem('clearfx_user');
-    if (!user) {
-      alert("Authentication required. Please sign in to upvote.");
-      return;
-    }
-    if (upvoted || !design) return;
-
-    try {
-      setDesign({ ...design, upvotes_count: (design.upvotes_count || 0) + 1 });
-      setUpvoted(true);
-    } catch (err: any) {
-      console.error(err);
-      alert("Failed to upvote.");
-    }
-  };
-
+  // Upvotes removed.
   if (loading) return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '800px' }}>
@@ -72,14 +55,6 @@ export default function DesignInspection({ slug, onClose, mockData }: DesignInsp
         <div className="card-header">
           <div className="card-title"><TerminalSquare size={14}/> {design.name}</div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button 
-              className={upvoted ? "btn btn-secondary" : "btn btn-primary"} 
-              onClick={handleUpvote} 
-              disabled={upvoted}
-              style={{ height: '24px', fontSize: '12px', padding: '0 8px' }}
-            >
-              <ArrowUpCircle size={12} /> {upvoted ? 'Upvoted' : 'Upvote'} ({design.upvotes_count || 0})
-            </button>
             <button className="btn btn-tertiary" onClick={onClose} style={{ padding: '0 4px' }}>
               <X size={16} />
             </button>
