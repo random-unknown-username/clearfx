@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Search Results for "{{ q }}"</h2>
+{% if designs %}
+<div class="grid">
+    {% for design in designs %}
+    <div class="card">
+        <h3><a href="/design/{{ design.slug }}">{{ design.name }}</a></h3>
+        <p class="author">by <a href="/creator/{{ design.creator.handle }}">{{ design.creator.handle }}</a></p>
+        <p class="desc">{{ design.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No results found.</p>
+{% endif %}
+{% endblock %}

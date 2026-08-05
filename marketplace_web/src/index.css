@@ -1,0 +1,456 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg-color: #020202; /* Deep black/grey */
+  --bg-secondary: #0a0a0a;
+  --text-primary: #ededed;
+  --text-secondary: #888888;
+  --accent: #ffffff; 
+  --accent-secondary: #333333;
+  --card-bg: #050505;
+  --card-border: #1f1f1f;
+  --card-hover: #0f0f0f;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Background patterns */
+.bg-gradient {
+  display: none; /* Remove neon gradients */
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 4rem;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--card-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+
+.brand-icon {
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--text-primary);
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--text-primary);
+  color: var(--bg-color);
+  border: 1px solid var(--text-primary);
+  padding: 0.4rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auth-btn:hover {
+  background: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
+.auth-btn.outline {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.auth-btn.outline:hover {
+  background: var(--card-border);
+}
+
+/* Hero Section */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero {
+  text-align: left;
+  margin-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 1px solid var(--card-border);
+  padding-left: 2rem;
+}
+
+.hero-badge {
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.hero h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin-bottom: 1rem;
+}
+
+.hero h1 span {
+  color: var(--text-secondary);
+}
+
+.hero p {
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* Preview Section */
+.preview-layout {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 1px; /* Creates the border effect between grid items */
+  background: var(--card-border);
+  border: 1px solid var(--card-border);
+  height: 600px;
+}
+
+/* Animation List */
+.animation-list {
+  background: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.list-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.list-header h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.trending-icon {
+  color: var(--text-primary);
+}
+
+.list-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--card-border);
+}
+
+.list-items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.list-items::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+}
+
+.anim-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-color);
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.anim-card:hover {
+  background: var(--card-hover);
+}
+
+.anim-card.selected {
+  background: var(--card-border);
+}
+
+.anim-info h4 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.anim-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.play-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.anim-card:hover .play-btn {
+  color: var(--text-primary);
+}
+
+.anim-card.selected .play-btn {
+  color: var(--text-primary);
+}
+
+/* Terminal Display */
+.terminal-display-area {
+  background: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminal-window-decor {
+  height: 48px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  position: relative;
+}
+
+.mac-buttons {
+  display: none; /* Remove Mac buttons for a more stark, engineering feel */
+}
+
+.terminal-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.terminal-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  padding: 24px;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  gap: 1rem;
+}
+
+.empty-icon {
+  opacity: 0.5;
+}
+
+/* Terminal Component */
+.terminal-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-color);
+}
+
+.terminal-element {
+  width: 100%;
+  height: 100%;
+}
+
+.terminal-element .xterm {
+  padding: 0;
+}
+
+.terminal-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  z-index: 10;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.terminal-overlay.error {
+  color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .preview-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 300px 500px;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  .main-content {
+    padding: 2rem;
+  }
+}
+
+/* Studio Layout */
+.studio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  height: 600px;
+}
+
+.editor-pane {
+  background: var(--bg-color);
+  border: 1px solid var(--card-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editor-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editor-header h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.run-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--text-primary);
+  color: var(--bg-color);
+  border: none;
+  padding: 0.4rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.run-button:hover {
+  background: var(--text-secondary);
+}
+
+.code-editor {
+  flex: 1;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 1.5rem;
+  border: none;
+  resize: none;
+  outline: none;
+}
+
+.preview-pane {
+  height: 100%;
+}

@@ -1,0 +1,16 @@
+format_version = "1"
+id = "org.community.star-burst"
+slug = "star-burst"
+name = "Star Burst"
+version = "1.0.0"
+author_name = "Community"
+author_handle = "community"
+description = "Exploding star animation."
+license = "MIT"
+entry_scene = "main"
+minimum_width = 80
+minimum_height = 24
+recommended_duration_ms = 3000
+supports_ascii = true
+supports_monochrome = true
+tags = ["space", "explosion", "particles"]

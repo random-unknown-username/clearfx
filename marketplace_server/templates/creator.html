@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="creator-profile">
+    <h1>{{ creator.display_name or creator.handle }}</h1>
+    <p class="bio">{{ creator.bio }}</p>
+</div>
+<h2>Designs by {{ creator.handle }}</h2>
+<div class="grid">
+    {% for design in designs %}
+    <div class="card">
+        <h3><a href="/design/{{ design.slug }}">{{ design.name }}</a></h3>
+        <p class="desc">{{ design.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

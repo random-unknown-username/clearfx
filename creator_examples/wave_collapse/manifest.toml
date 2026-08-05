@@ -1,0 +1,16 @@
+format_version = "1"
+id = "org.community.wave-collapse"
+slug = "wave-collapse"
+name = "Wave Collapse"
+version = "1.0.0"
+author_name = "Community"
+author_handle = "community"
+description = "Quantum wave function collapse visualization."
+license = "MIT"
+entry_scene = "main"
+minimum_width = 80
+minimum_height = 24
+recommended_duration_ms = 5000
+supports_ascii = true
+supports_monochrome = true
+tags = ["physics", "wave", "quantum"]
