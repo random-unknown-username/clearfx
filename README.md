@@ -1,6 +1,6 @@
 <p align="center">
   <strong>ClearFX</strong><br>
-  <em>Because a blank screen is boring</em>
+  <em>because a blank screen is boring as fuck</em>
 </p>
 
 <!-- TODO: add demo gif -->
@@ -15,80 +15,75 @@
 
 ---
 
-I got tired of just seeing my terminal text vanish instantly when I ran `clear`, so I built ClearFX. It swaps out the standard `clear` command for a quick, random terminal animation. One second you're clearing some messy logs, and the next you're watching a tiny city shut off its lights or some ASCII birds fly away. 
+ngl i got so sick of watching my terminal just instantly vanish every time i ran `clear`, so i made this. ClearFX literally hijacks ur standard clear command (or `ls`, or whatever u want) and drops a crazy terminal animation before wiping the screen. u could be looking at some messy ass logs and one second later ur watching a tiny city shut off its lights or some ascii matrix rain.
 
-It runs completely offline during playback, has a declarative package format so you can safely run community animations, and has a marketplace you can browse right from your terminal.
+it runs completely offline, uses a super safe sandboxed `.clearfx` package format so nobody can run malicious code on ur machine, and has a whole marketplace u can browse straight from the terminal.
 
 ## Installation
 
 ```bash
 pip install clearfx
 ```
+*(if u already have it, just do `pip install -U clearfx` to update)*
 
 ### Shell Integration
 
-To make your regular `clear` command actually use ClearFX, run:
+to actually make your `clear` command use this, u gotta set up the shell hooks:
 
 ```bash
 clearfx setup-shell
 ```
 
-It'll auto-detect what you're using (Bash, Zsh, or Fish) and show you exactly what it's adding before it does anything. It automatically backs up your config too, just in case.
+it auto-detects what ur using (bash, zsh, fish, or powershell) and injects the hook. don't worry, it makes a backup of your config first just in case.
 
-If you need to force a specific shell:
-
+after that, just restart your shell or resource it:
 ```bash
-clearfx setup-shell --shell zsh
+source ~/.bashrc
 ```
 
-Restart your shell or source your config file, and you're good to go!
-
-If you ever want to go back to normal:
-
+and if u ever wanna wipe it completely from your machine:
 ```bash
-clearfx remove-shell
+clearfx reset
 ```
 
 ## Usage
 
-### Play a random animation
+### play a random animation
 ```bash
 clearfx play
 ```
 
-### Play a specific one
+### wrap any command
+want an animation to play every time you run `ls` or `git`?
 ```bash
-clearfx play aurora-fold
+clearfx wrap ls --anim aurora-fold
 ```
 
-### List what's available
+### list what we got
 ```bash
 clearfx list
-clearfx list --builtin
 clearfx list --community
 ```
 
-### Tweak the playback
+### tweak the playback
 ```bash
-clearfx play --duration 700       # Speed it up (ms)
-clearfx play --fps 24             # Change frame rate
-clearfx play --seed 42            # Get the exact same animation output
-clearfx play --ascii              # Force ASCII mode
-clearfx play --monochrome         # No colors
-clearfx play --reduced-motion     # Accessibility mode
+clearfx play --duration 700       # speed it up (ms)
+clearfx play --fps 60             # buttery smooth
+clearfx play --seed 42            # exact same output every time
+clearfx play --ascii              # force ascii mode
+clearfx play --monochrome         # no colors
+clearfx play --reduced-motion     # accessibility mode (less crazy)
 ```
 
-### Emergency disable
-
-If something goes wrong or you just need it off right now:
+### emergency kill switch
+if something breaks or u just want it off right now:
 ```bash
 export CLEARFX_DISABLE=1
 ```
-It'll completely bypass the animation and run a standard clear.
 
 ## Animations
 
-I've built 36 animations so far. Here's what's included:
+i've built 36 built-in animations so far. they range from standard ascii art to full on rgb particle engines.
 
 | # | Animation | Description |
 |---|-----------|-------------|
@@ -129,18 +124,18 @@ I've built 36 animations so far. Here's what's included:
 | 35 | Mechanical Iris | Camera aperture blades close |
 | 36 | Tiny City Shutdown | A skyline's windows turn off one by one |
 
-> Note: Built-in animations use fictional creator handles to demonstrate how marketplace attribution works.
+> note: built-in animations use fictional creator handles to demonstrate how marketplace attribution works.
 
 ## Configuration
 
-Settings live in your platform's standard config directory (like `~/.config/clearfx/config.toml` on Linux).
+all ur settings live in your platform's standard config directory (like `~/.config/clearfx/config.toml` on linux).
 
 ```bash
-clearfx config                      # Check current settings
-clearfx config set duration_ms 900   # Change something
+clearfx config                      # check current settings
+clearfx config set duration_ms 900   # change something rq
 ```
 
-Example config:
+example config:
 ```toml
 enabled = true
 duration_ms = 1100
@@ -152,21 +147,20 @@ attribution_position = "auto"
 
 ## Accessibility
 
-ClearFX respects `NO_COLOR` for monochrome mode out of the box.
+if ur terminal doesn't support crazy unicode or colors, u can force it:
+```bash
+clearfx config set ascii_only true
+clearfx config set monochrome true
+```
 
-If you want simpler, gentler animations with fewer particles and no rapid flashing:
+if u want simpler, gentler animations with fewer flashing lights:
 ```bash
 clearfx config set reduced_motion true
 ```
 
-If your terminal doesn't like Unicode:
-```bash
-clearfx config set ascii_only true
-```
-
 ## Marketplace
 
-You can grab designs other people have made:
+u can grab designs other people have made from the community catalog:
 
 ```bash
 clearfx search "space"
@@ -176,7 +170,7 @@ clearfx update
 
 ## Creating Designs
 
-I wanted to make it easy to build your own.
+i wanted to make it insanely easy to build ur own animations using python.
 
 ```bash
 clearfx create my-animation
@@ -186,16 +180,17 @@ clearfx preview .
 clearfx validate .
 clearfx pack .
 ```
+*(check out `docs/CREATOR_SDK.md` for the full sdk tutorial on how to write these)*
 
 ### Security Model
 
-Running some random python code every time you clear your screen is a terrible idea. So, community packages use a `.clearfx` file format. It's just a ZIP archive with a declarative JSON scene definition.
+running random python code every time u clear ur screen is a terrible fucking idea. 
 
-There are no `.py` files, no arbitrary code execution, no shell scripts, and zero network access when playing. It's completely sandboxed.
+so, community packages use a `.clearfx` file format. it's just a zip archive with a declarative JSON scene definition. there are ZERO `.py` files, ZERO arbitrary code execution, and ZERO network access when playing. it's completely sandboxed so u can install shit without worrying.
 
 ## Development Setup
 
-If you want to poke around the code:
+wanna mess with the code?
 
 ```bash
 git clone https://github.com/random-unknown-username/clearfx.git
@@ -203,16 +198,15 @@ cd clearfx
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,client,recording]"
-pre-commit install
 ```
 
-To run the web marketplace locally for testing, the frontend code is included in the repo. Just start it up!
+to run the web marketplace locally for testing, the frontend code is included in the repo. just start it up!
 
 ## Troubleshooting
 
-If things go weird:
-1. Run `clearfx doctor`
-2. If your terminal gets messed up if you hit Ctrl+C at the wrong time (it shouldn't, but just in case), type `reset` and hit enter.
+if things go weird:
+1. run `clearfx doctor` to see wtf is wrong
+2. if your terminal gets messed up (it shouldn't, but just in case), type `reset` and hit enter.
 
 ## License
-MIT License.
+MIT License. do whatever u want with it.
