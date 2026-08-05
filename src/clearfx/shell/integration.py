@@ -7,11 +7,17 @@ class ShellIntegration:
     BLOCK_END = "# <<< clearfx managed block <<<"
 
     def detect_shell(self) -> str:
-        shell = os.environ.get("SHELL", "")
+        shell = os.environ.get("SHELL", "").lower()
         if "zsh" in shell:
             return "zsh"
         elif "fish" in shell:
             return "fish"
+        elif "pwsh" in shell or "powershell" in shell:
+            return "powershell"
+            
+        if os.name == "nt":
+            return "powershell"
+            
         return "bash"
 
     def get_config_file(self, shell: str) -> Path:
@@ -20,6 +26,11 @@ class ShellIntegration:
             return home / ".zshrc"
         elif shell == "fish":
             return home / ".config" / "fish" / "config.fish"
+        elif shell == "powershell":
+            if os.name == "nt":
+                return home / "Documents" / "PowerShell" / "Microsoft.PowerShell_profile.ps1"
+            else:
+                return home / ".config" / "powershell" / "Microsoft.PowerShell_profile.ps1"
         return home / ".bashrc"
 
     def get_managed_block(self, shell: str, wrapped_commands: dict[str, str] = None) -> str:
@@ -41,6 +52,15 @@ class ShellIntegration:
                 anim_arg = f" {anim}" if anim else ""
                 blocks.append(f"  function {cmd}\n    command clearfx play{anim_arg}\n    command {cmd} $argv\n  end")
             blocks.append("end")
+        elif shell == "powershell":
+            blocks.append("if (Get-Command clearfx -ErrorAction SilentlyContinue) {")
+            blocks.append("  function clearfx_clear {\n    clearfx play --clear-after\n  }")
+            blocks.append("  Set-Alias clear clearfx_clear -Force -Option AllScope -ErrorAction SilentlyContinue")
+            for cmd, anim in wrapped.items():
+                anim_arg = f" {anim}" if anim else ""
+                blocks.append(f"  function clearfx_{cmd} {{\n    clearfx play{anim_arg}\n    if ('{cmd}' -eq 'ls' -and (Get-Command Get-ChildItem -ErrorAction SilentlyContinue)) {{\n      Get-ChildItem @args\n    }} else {{\n      $c = Get-Command {cmd} -CommandType Application,Cmdlet,ExternalScript -ErrorAction SilentlyContinue | Select-Object -First 1\n      if ($c) {{ & $c @args }} else {{ Write-Host \"Command {cmd} not found\" -ForegroundColor Red }}\n    }}\n  }}")
+                blocks.append(f"  Set-Alias {cmd} clearfx_{cmd} -Force -Option AllScope -ErrorAction SilentlyContinue")
+            blocks.append("}")
             
         blocks.append(self.BLOCK_END)
         return "\n".join(blocks)
