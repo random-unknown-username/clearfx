@@ -200,13 +200,31 @@ export default function App() {
               <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>pip install clearfx</pre>
             </div>
             
-            <div>
+            <div style={{ marginBottom: 'var(--space-6)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <span className="status-dot green"></span>
                 <h3 style={{ fontSize: '15px' }}>2. Shell Hooks</h3>
               </div>
               <p className="supporting-text" style={{ marginBottom: '12px' }}>Initialize shell integrations to wrap the clear command automatically.</p>
               <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>clearfx setup-shell</pre>
+            </div>
+
+            <div style={{ marginBottom: 'var(--space-6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span className="status-dot blue"></span>
+                <h3 style={{ fontSize: '15px' }}>3. Quick Wrap</h3>
+              </div>
+              <p className="supporting-text" style={{ marginBottom: '12px' }}>Want to animate a specific command? Wrap it directly (e.g., wrap <code>ls</code> with the Aurora Fold animation).</p>
+              <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>clearfx wrap ls --anim aurora-fold</pre>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span className="status-dot red"></span>
+                <h3 style={{ fontSize: '15px' }}>Emergency Reset</h3>
+              </div>
+              <p className="supporting-text" style={{ marginBottom: '12px' }}>If you ever want to completely wipe ClearFX from your terminal and reset everything to normal.</p>
+              <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>clearfx reset</pre>
             </div>
           </section>
         )}
