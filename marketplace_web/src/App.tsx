@@ -4,19 +4,10 @@ import DesignInspection from './components/DesignInspection';
 import TerminalPreview from './components/TerminalPreview';
 import UserProfile from './components/UserProfile';
 import { defaultCatalog } from './lib/catalog';
-import { TerminalSquare, Compass, Code2, User as UserIcon, LogIn, ArrowUpCircle } from 'lucide-react';
+import { TerminalSquare, User as UserIcon, LogIn } from 'lucide-react';
 import './index.css';
-
-interface Creator {
-  handle: string;
-}
-
-interface DesignInfo {
-  slug: string;
-  name: string;
-  description: string;
-  creator: Creator;
-}
+import { auth, db, googleProvider, signInWithPopup, signOut, collection, getDocs, query } from './lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function App() {
   const [designs, setDesigns] = useState<any[]>(defaultCatalog);
@@ -28,25 +19,36 @@ export default function App() {
   const [userHandle, setUserHandle] = useState<string>('');
 
   useEffect(() => {
-    // Simulate checking local storage for a session
-    const saved = localStorage.getItem('clearfx_user');
-    if (saved) {
-      const u = JSON.parse(saved);
-      setUser(u);
-      setUserHandle(u.handle);
-    }
+    // Listen for Firebase auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const handle = (firebaseUser.email || '').split('@')[0] || 'user';
+        setUser({ uid: firebaseUser.uid, email: firebaseUser.email, handle });
+        setUserHandle(handle);
+      } else {
+        setUser(null);
+        setUserHandle('');
+      }
+    });
 
-    // Fetch catalog from backend
-    fetch('http://localhost:8000/api/catalog')
-      .then(res => res.json())
-      .then(data => {
-        if (data.designs) {
-          // Remove duplicates if backend returned some defaults
-          const merged = [...data.designs];
-          setDesigns(merged);
-        }
-      })
-      .catch(err => console.error("Failed to fetch catalog:", err));
+    // Fetch catalog from Firestore
+    const fetchCatalog = async () => {
+      try {
+        const q = query(collection(db, "designs"));
+        const querySnapshot = await getDocs(q);
+        const fbDesigns = querySnapshot.docs.map(doc => doc.data());
+        
+        // Merge Firestore designs with builtins
+        setDesigns([...fbDesigns, ...defaultCatalog]);
+      } catch (err) {
+        console.error("Failed to fetch from Firestore:", err);
+        setDesigns(defaultCatalog);
+      }
+    };
+    
+    fetchCatalog();
+
+    return () => unsubscribe();
   }, []);
 
   const sortedDesigns = [...designs].sort((a, b) => {
@@ -65,17 +67,16 @@ export default function App() {
   });
 
   const handleGoogleLogin = async () => {
-    const mockUser = { uid: 'mock-user-123', email: 'developer@clearfx.local', handle: 'Rand0m_unkn0wn' };
-    setUser(mockUser);
-    setUserHandle(mockUser.handle);
-    localStorage.setItem('clearfx_user', JSON.stringify(mockUser));
-    setShowLoginModal(false);
+    try {
+      await signInWithPopup(auth, googleProvider);
+      setShowLoginModal(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSignOut = () => {
-    setUser(null);
-    setUserHandle('');
-    localStorage.removeItem('clearfx_user');
+    signOut(auth);
   };
 
   return (

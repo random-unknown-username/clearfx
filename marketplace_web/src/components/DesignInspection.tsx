@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import TerminalPreview from './TerminalPreview';
-import { TerminalSquare, ArrowUpCircle, X } from 'lucide-react';
+import { TerminalSquare, X } from 'lucide-react';
 
 interface DesignInspectionProps {
   slug: string;

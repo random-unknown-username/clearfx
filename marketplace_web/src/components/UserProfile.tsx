@@ -4,6 +4,7 @@ import { User as UserIcon, ArrowUpCircle } from 'lucide-react';
 interface UserProfileProps {
   uid: string;
   handle: string;
+  designs?: any[];
 }
 
 interface Design {

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { Play, Code2, Terminal as TerminalIcon, UploadCloud } from 'lucide-react';
+import { Play, Code2, UploadCloud } from 'lucide-react';
 import Editor from '@monaco-editor/react';
+import { db, setDoc, doc } from '../lib/firebase';
 
 const DEFAULT_CODE = `"""Custom ClearFX animation."""
 from clearfx.compiler.creator_sdk import CreatorAnimation
@@ -102,12 +103,12 @@ export default function Studio({ user, onPublish }: StudioProps) {
       if (termRef.current) {
         termRef.current.clear();
       }
-      wsRef.current.send(JSON.stringify({ 
-        type: 'run', 
-        code, 
-        width: termRef.current.cols, 
-        height: termRef.current.rows 
-      }));
+        wsRef.current.send(JSON.stringify({ 
+          type: 'run', 
+          code, 
+          width: termRef.current ? termRef.current.cols : 80, 
+          height: termRef.current ? termRef.current.rows : 24 
+        }));
     }
   };
 
@@ -141,26 +142,16 @@ export default function Studio({ user, onPublish }: StudioProps) {
       };
       
       try {
-        await fetch('http://localhost:8000/api/publish', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            slug: slug,
-            name: name,
-            description: desc,
-            author_handle: user.handle,
-            code: code
-          })
-        });
+        await setDoc(doc(db, "designs", slug), newDesign);
+        onPublish(newDesign);
+        alert(`Successfully published ${name} to the catalog!`);
       } catch (err) {
-        console.error("Failed to publish to local backend", err);
+        console.error("Failed to publish to Firestore", err);
+        alert("Failed to publish: " + (err as Error).message);
       }
-
-      onPublish(newDesign);
-      alert(`Successfully published ${name} to the catalog!`);
     } catch (err: any) {
       console.error(err);
-      alert("Failed to publish: " + err.message);
+      alert("Failed to create design object: " + err.message);
     }
   };
 
