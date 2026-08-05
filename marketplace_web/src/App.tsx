@@ -196,8 +196,8 @@ export default function App() {
                 <span className="status-dot orange"></span>
                 <h3 style={{ fontSize: '15px' }}>1. Package Manager</h3>
               </div>
-              <p className="supporting-text" style={{ marginBottom: '12px' }}>Install the core CLI globally via pipx.</p>
-              <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>pipx install clearfx</pre>
+              <p className="supporting-text" style={{ marginBottom: '12px' }}>Install the core CLI globally via pip.</p>
+              <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>pip install clearfx</pre>
             </div>
             
             <div>
