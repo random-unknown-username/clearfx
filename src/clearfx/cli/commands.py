@@ -636,9 +636,10 @@ def cmd_reset(args: argparse.Namespace) -> None:
     from clearfx.shell.integration import ShellIntegration
     import shutil
 
-    # 1. Remove shell integration blocks from bashrc/zshrc/fish
+    # 1. Remove shell integration blocks from bashrc/zshrc/fish/powershell
     integration = ShellIntegration()
-    integration.remove()
+    for sh in ["bash", "zsh", "fish", "powershell"]:
+        integration.remove(shell=sh)
 
     # 2. Delete the entire clearfx config directory
     config_dir = get_config_path().parent
