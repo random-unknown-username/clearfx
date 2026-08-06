@@ -94,7 +94,7 @@ export default function DesignInspection({ slug, onClose, mockData }: DesignInsp
             <div style={{ width: 40 }}></div>
           </div>
           <div className="terminal-wrapper">
-            <TerminalPreview slug={design.slug} />
+            <TerminalPreview slug={design.slug} code={(design as any).code} />
           </div>
         </div>
       </div>

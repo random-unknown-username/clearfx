@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { Terminal } from '@xterm/xterm';
-import { FitAddon } from '@xterm/addon-fit';
+import { useState } from 'react';
 import { Play, Code2, UploadCloud } from 'lucide-react';
 import Editor from '@monaco-editor/react';
 import { db, setDoc, doc } from '../lib/firebase';
+import TerminalPreview from './TerminalPreview';
 
 const DEFAULT_CODE = `"""Custom ClearFX animation."""
 from clearfx.compiler.creator_sdk import CreatorAnimation
@@ -47,69 +46,13 @@ interface StudioProps {
 }
 
 export default function Studio({ user, onPublish }: StudioProps) {
-  const terminalRef = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState(DEFAULT_CODE);
-  const wsRef = useRef<WebSocket | null>(null);
-  const termRef = useRef<Terminal | null>(null);
-
-  useEffect(() => {
-    if (!terminalRef.current) return;
-
-    const term = new Terminal({
-      theme: {
-        background: '#000000',
-        foreground: '#ffffff',
-        cursor: '#ffffff',
-      },
-      fontFamily: "'JetBrains Mono', monospace",
-      fontSize: 13,
-      allowProposedApi: true,
-      disableStdin: true,
-    });
-    
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
-    
-    term.open(terminalRef.current);
-    fitAddon.fit();
-    termRef.current = term;
-
-    const wsUrl = `ws://localhost:8000/ws/studio`;
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      term.writeln('\x1b[32mCompiler ready. Click "Execute" to preview.\x1b[0m');
-    };
-
-    ws.onmessage = (event) => {
-      term.write(event.data);
-    };
-
-    const handleResize = () => {
-      fitAddon.fit();
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      ws.close();
-      term.dispose();
-    };
-  }, []);
+  const [previewCode, setPreviewCode] = useState(DEFAULT_CODE);
+  const [previewKey, setPreviewKey] = useState(0);
 
   const handleRun = () => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      if (termRef.current) {
-        termRef.current.clear();
-      }
-        wsRef.current.send(JSON.stringify({ 
-          type: 'run', 
-          code, 
-          width: termRef.current ? termRef.current.cols : 80, 
-          height: termRef.current ? termRef.current.rows : 24 
-        }));
-    }
+    setPreviewCode(code);
+    setPreviewKey(k => k + 1);
   };
 
   const handlePublish = async () => {
@@ -204,8 +147,8 @@ export default function Studio({ user, onPublish }: StudioProps) {
           <span className="mono-label">LIVE PREVIEW</span>
           <div style={{ width: 40 }}></div>
         </div>
-        <div className="card-content terminal-wrapper">
-          <div ref={terminalRef} className="terminal-container" />
+        <div className="card-content terminal-wrapper" style={{ padding: 0 }}>
+          <TerminalPreview key={previewKey} slug="studio-preview" code={previewCode} />
         </div>
       </div>
     </div>

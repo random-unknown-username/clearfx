@@ -163,7 +163,7 @@ export default function App() {
                     onClick={() => setSelectedSlug(anim.slug)}
                   >
                     <div className="catalog-card-preview">
-                      <TerminalPreview slug={anim.slug} />
+                      <TerminalPreview slug={anim.slug} code={anim.code} />
                     </div>
                     <div className="catalog-card-body">
                       <div className="catalog-card-header">
