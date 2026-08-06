@@ -41,7 +41,15 @@ class MockTerminalSession(TerminalSession):
     def __init__(self, width=80, height=24):
         self._w = width
         self._h = height
-        self.capabilities = TerminalCapabilities(True, True, width=width, height=height, colors="256")
+        self._capabilities = TerminalCapabilities(
+            width=width, 
+            height=height, 
+            colors="256color",
+            unicode_support=True,
+            alternate_screen_support=True,
+            title_support=True,
+            os_name="web"
+        )
     
     def __enter__(self):
         return self
