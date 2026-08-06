@@ -35,7 +35,7 @@ export default function TerminalPreview({ slug, code }: TerminalPreviewProps) {
     fitAddon.fit();
 
     // Start WebWorker
-    const worker = new Worker('/pyodideWorker.js?v=4');
+    const worker = new Worker('/pyodideWorker.js?v=5');
     workerRef.current = worker;
 
     worker.onmessage = (event) => {

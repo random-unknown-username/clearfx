@@ -88,11 +88,12 @@ import importlib.util
 registry = AnimationRegistry()
 
 def play_builtin(slug, width, height):
-    anim = registry.get_animation(slug)
-    if not anim:
+    anim_cls = registry.get_animation(slug)
+    if not anim_cls:
         sys.stdout.write(f"\\r\\nError: Animation '{slug}' not found.\\r\\n")
         return
         
+    anim = anim_cls()
     player = AnimationPlayer(anim, loop=True, config={"clear_after": False})
     # Override the session in the player to use our mock
     session = MockTerminalSession(width, height)
