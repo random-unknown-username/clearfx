@@ -19,10 +19,13 @@ import sys
 import time
 import js
 
+import json
+
 class WebWorkerStdout:
     def write(self, data):
-        # send data to main thread
-        js.postMessage({"type": "stdout", "data": data})
+        # send data to main thread as a pure JS object to avoid DataCloneError on PyProxy
+        js_obj = js.JSON.parse(json.dumps({"type": "stdout", "data": data}))
+        js.postMessage(js_obj)
     def flush(self):
         pass
     def fileno(self):
