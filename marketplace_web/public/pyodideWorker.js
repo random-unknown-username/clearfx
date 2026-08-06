@@ -139,9 +139,9 @@ self.onmessage = async (event) => {
     const pyodide = await pyodideReadyPromise;
     if (code) {
       pyodide.globals.set("custom_code", code);
-      pyodide.runPython(\`play_custom(custom_code, \${width}, \${height})\`);
+      pyodide.runPython(`play_custom(custom_code, ${width}, ${height})`);
     } else {
-      pyodide.runPython(\`play_builtin("\${slug}", \${width}, \${height})\`);
+      pyodide.runPython(`play_builtin("${slug}", ${width}, ${height})`);
     }
     self.postMessage({ type: "done" });
   }
