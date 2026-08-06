@@ -77,9 +77,14 @@ class MockTerminalSession(TerminalSession):
     def show_cursor(self):
         self.write("\\033[?25h")
 
-# Monkey-patch TerminalSession in player
+# Monkey-patch TerminalSession and check_keypress in player
 import clearfx.engine.player
 clearfx.engine.player.TerminalSession = MockTerminalSession
+
+def mock_check_keypress(self):
+    return False
+
+clearfx.engine.player.AnimationPlayer._check_keypress = mock_check_keypress
 
 from clearfx.core.registry import AnimationRegistry
 from clearfx.engine.player import AnimationPlayer
