@@ -2,6 +2,10 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js");
 
 let pyodideReadyPromise = null;
 
+self.postMessageObject = function(msgStr) {
+  self.postMessage(JSON.parse(msgStr));
+};
+
 async function initPyodide() {
   const pyodide = await loadPyodide({
     indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
@@ -18,14 +22,11 @@ async function initPyodide() {
 import sys
 import time
 import js
-
 import json
 
 class WebWorkerStdout:
     def write(self, data):
-        # send data to main thread as a pure JS object to avoid DataCloneError on PyProxy
-        js_obj = js.JSON.parse(json.dumps({"type": "stdout", "data": data}))
-        js.postMessage(js_obj)
+        js.postMessageObject(json.dumps({"type": "stdout", "data": data}))
     def flush(self):
         pass
     def fileno(self):
