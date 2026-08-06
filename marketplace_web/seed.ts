@@ -27,6 +27,21 @@ const dummyDesigns = [
   { slug: 'dvd-bounce', name: 'DVD Logo', desc: 'The iconic bouncing DVD logo hitting the corners.' }
 ];
 
+const DEFAULT_CODE = `"""Community Design."""
+from clearfx.compiler.creator_sdk import CreatorAnimation
+import math
+
+class MyAnimation(CreatorAnimation):
+    def design(self) -> None:
+        self.add_text(
+            text="Community Design Loading...",
+            x="w/2 - 14",
+            y="h/2",
+            fg=(0, 255, 128),
+            bold=True
+        )
+`;
+
 async function seed() {
   console.log("Seeding 10 designs by Rand0m_unkn0wn...");
   for (let i = 0; i < dummyDesigns.length; i++) {
@@ -37,7 +52,9 @@ async function seed() {
       description: d.desc,
       author_uid: 'dummy-uid-12345',
       author_handle: 'Rand0m_unkn0wn',
-      upvotes_count: Math.floor(Math.random() * 500) + 10
+      upvotes_count: Math.floor(Math.random() * 500) + 10,
+      code: DEFAULT_CODE,
+      source: 'community'
     });
     console.log(`Added ${d.slug}`);
   }

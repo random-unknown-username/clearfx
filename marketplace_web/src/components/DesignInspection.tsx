@@ -94,7 +94,13 @@ export default function DesignInspection({ slug, onClose, mockData }: DesignInsp
             <div style={{ width: 40 }}></div>
           </div>
           <div className="terminal-wrapper">
-            <TerminalPreview slug={design.slug} code={(design as any).code} />
+            <TerminalPreview slug={design.slug} code={(design as any).code || ((design as any).source === 'community' || !design.hasOwnProperty('source') ? `"""Community Design."""
+from clearfx.compiler.creator_sdk import CreatorAnimation
+
+class MyAnimation(CreatorAnimation):
+    def design(self) -> None:
+        self.add_text(text="Community Design Loading...", x="w/2 - 14", y="h/2", fg=(0, 255, 128), bold=True)
+` : undefined)} />
           </div>
         </div>
       </div>

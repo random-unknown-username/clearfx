@@ -9,6 +9,20 @@ import './index.css';
 import { auth, db, googleProvider, signInWithPopup, signOut, collection, getDocs, query } from './lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
+const FALLBACK_CODE = `"""Community Design."""
+from clearfx.compiler.creator_sdk import CreatorAnimation
+
+class MyAnimation(CreatorAnimation):
+    def design(self) -> None:
+        self.add_text(
+            text="Community Design Loading...",
+            x="w/2 - 14",
+            y="h/2",
+            fg=(0, 255, 128),
+            bold=True
+        )
+`;
+
 export default function App() {
   const [designs, setDesigns] = useState<any[]>(defaultCatalog);
   const [sortBy, setSortBy] = useState<'newest' | 'name' | 'author'>('newest');
@@ -163,7 +177,10 @@ export default function App() {
                     onClick={() => setSelectedSlug(anim.slug)}
                   >
                     <div className="catalog-card-preview">
-                      <TerminalPreview slug={anim.slug} code={anim.code} />
+                      <TerminalPreview 
+                        slug={anim.slug} 
+                        code={anim.code || (!defaultCatalog.some(d => d.slug === anim.slug) ? FALLBACK_CODE : undefined)} 
+                      />
                     </div>
                     <div className="catalog-card-body">
                       <div className="catalog-card-header">
