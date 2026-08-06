@@ -231,8 +231,17 @@ export default function App() {
 
             <div style={{ marginBottom: 'var(--space-6)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span className="status-dot purple"></span>
+                <h3 style={{ fontSize: '15px' }}>3. Reload Shell</h3>
+              </div>
+              <p className="supporting-text" style={{ marginBottom: '12px' }}>Source your configuration file to apply the newly added shell hooks.</p>
+              <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>source ~/.bashrc  # or ~/.zshrc</pre>
+            </div>
+
+            <div style={{ marginBottom: 'var(--space-6)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <span className="status-dot blue"></span>
-                <h3 style={{ fontSize: '15px' }}>3. Quick Wrap</h3>
+                <h3 style={{ fontSize: '15px' }}>4. Quick Wrap</h3>
               </div>
               <p className="supporting-text" style={{ marginBottom: '12px' }}>Want to animate a specific command? Wrap it directly (e.g., wrap <code>ls</code> with the Aurora Fold animation).</p>
               <pre style={{ background: 'var(--bg-canvas)', padding: '16px', borderRadius: 'var(--radius-input)', border: '1px solid var(--border-strong)', fontFamily: 'var(--font-mono)', fontSize: '13px', color: 'var(--text-high)' }}>clearfx wrap ls --anim aurora-fold</pre>
