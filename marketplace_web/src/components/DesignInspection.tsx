@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import TerminalPreview from './TerminalPreview';
 import { TerminalSquare, X } from 'lucide-react';
+import { defaultCatalog } from '../lib/catalog';
 
 interface DesignInspectionProps {
   slug: string;
@@ -94,7 +95,7 @@ export default function DesignInspection({ slug, onClose, mockData }: DesignInsp
             <div style={{ width: 40 }}></div>
           </div>
           <div className="terminal-wrapper">
-            <TerminalPreview slug={design.slug} code={(design as any).code || ((design as any).source === 'community' || !design.hasOwnProperty('source') ? `"""Community Design."""
+            <TerminalPreview slug={design.slug} code={(design as any).code || (!defaultCatalog.some(d => d.slug === design.slug) ? `"""Community Design."""
 from clearfx.compiler.creator_sdk import CreatorAnimation
 
 class MyAnimation(CreatorAnimation):
